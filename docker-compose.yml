@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - strangermeet-network
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    ports:
+      - "5000:5000"
+    env_file: .env
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/strangermeet
+    depends_on:
+      - mongo
+    networks:
+      - strangermeet-network
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    ports:
+      - "5173:80"
+    depends_on:
+      - server
+    networks:
+      - strangermeet-network
+
+volumes:
+  mongo-data:
+
+networks:
+  strangermeet-network:
+    driver: bridge
