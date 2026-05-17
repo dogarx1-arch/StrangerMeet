@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { io } from 'socket.io-client'
 import useSessionStore from '../store/sessionStore'
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || ''
+const SOCKET_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
 
 export default function useSocket() {
   const socketRef = useRef(null)
@@ -13,6 +14,7 @@ export default function useSocket() {
     const socket = io(SOCKET_URL, {
       transports: ['websocket', 'polling'],
       autoConnect: true,
+      withCredentials: true,
     })
 
     socketRef.current = socket
@@ -20,11 +22,18 @@ export default function useSocket() {
     socket.on('connect', () => {
       setConnected(true)
       console.log('[socket] connected:', socket.id)
+      console.log('[socket] connected to:', SOCKET_URL)
     })
 
-    socket.on('disconnect', () => {
+    socket.on('connect_error', (err) => {
       setConnected(false)
-      console.log('[socket] disconnected')
+      console.error('[socket] connection error:', err.message)
+      console.error('[socket] attempted URL:', SOCKET_URL)
+    })
+
+    socket.on('disconnect', (reason) => {
+      setConnected(false)
+      console.log('[socket] disconnected:', reason)
     })
 
     socket.on('session:init', ({ anonId }) => {
@@ -33,6 +42,7 @@ export default function useSocket() {
     })
 
     return () => {
+      socket.removeAllListeners()
       socket.disconnect()
       socketRef.current = null
     }
