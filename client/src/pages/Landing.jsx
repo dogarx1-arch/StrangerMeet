@@ -6,6 +6,9 @@ import SectionTag from '../components/ui/SectionTag'
 import BtnCobalt from '../components/ui/BtnCobalt'
 import BtnGhost from '../components/ui/BtnGhost'
 
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+
 export default function Landing() {
   const navigate = useNavigate()
 
@@ -16,9 +19,9 @@ export default function Landing() {
   })
 
   useEffect(() => {
-    fetch('/api/stats')
-      .then(r => r.json())
-      .then(data => setStats(data))
+    fetch(`${API_BASE_URL}/api/stats`)
+      .then((r) => r.json())
+      .then((data) => setStats(data))
       .catch(() => {})
   }, [])
 
@@ -63,7 +66,6 @@ export default function Landing() {
     <main className="min-h-screen overflow-x-hidden bg-vellum text-ink">
       <Navbar onlineCount={stats.onlineCount} />
 
-      {/* Hero */}
       <section className="px-4 pt-24 pb-12 sm:px-6 sm:pt-28 sm:pb-16 lg:px-8">
         <div className="mx-auto w-full max-w-5xl text-center">
           <div className="mb-8 flex w-full justify-center overflow-hidden">
@@ -103,7 +105,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Stats */}
       <section className="px-4 py-10 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-5 lg:gap-6">
@@ -131,7 +132,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Features */}
       <section id="features" className="bg-surface-0 px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <div className="mb-10 text-center sm:mb-12">
@@ -162,7 +162,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* How it works */}
       <section className="px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <div className="mb-10 text-center sm:mb-12">
@@ -193,7 +192,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="bg-surface-0 px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="font-serif text-3xl font-bold text-ink sm:text-4xl md:text-5xl">
@@ -210,7 +208,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-surface-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-left">
           <span className="font-serif text-sm font-bold text-ink">
