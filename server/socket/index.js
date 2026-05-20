@@ -10,48 +10,71 @@ function attachSocket(server) {
     cors: {
       origin: env.CLIENT_ORIGIN,
       methods: ['GET', 'POST'],
-      credentials: true
-    }
+      credentials: true,
+    },
+    transports: ['websocket', 'polling'],
+    pingTimeout: 20000,
+    pingInterval: 25000,
   })
 
   io.on('connection', (socket) => {
-    // Generate unique anonId
     let anonId
+
     do {
       anonId = generateAnonId()
     } while (sessionManager.isAnonIdActive(anonId))
 
-    // Send init event to assign anonId to client
+    socket.data.anonId = anonId
+
     socket.emit('session:init', { anonId })
 
-    // Increment online count
     sessionManager.incrementOnline()
-    io.emit('stats:update', sessionManager.getStats(matchmaking.getWaitingCount()))
 
-    // Matchmaking events
-    socket.on('queue:join', ({ anonId }) => {
-      matchmaking.joinQueue(socket, anonId, io)
-      io.emit('stats:update', sessionManager.getStats(matchmaking.getWaitingCount()))
+    console.log(`[socket] connected ${socket.id} as ${anonId}`)
+
+    io.emit(
+      'stats:update',
+      sessionManager.getStats(matchmaking.getWaitingCount())
+    )
+
+    socket.on('queue:join', (payload = {}) => {
+      const finalAnonId = socket.data.anonId || payload.anonId
+
+      console.log(`[queue:join] ${socket.id} / ${finalAnonId}`)
+
+      matchmaking.joinQueue(socket, finalAnonId, io)
+
+      io.emit(
+        'stats:update',
+        sessionManager.getStats(matchmaking.getWaitingCount())
+      )
     })
 
     socket.on('queue:leave', () => {
       matchmaking.leaveQueue(socket)
-      io.emit('stats:update', sessionManager.getStats(matchmaking.getWaitingCount()))
+
+      io.emit(
+        'stats:update',
+        sessionManager.getStats(matchmaking.getWaitingCount())
+      )
     })
 
-    // Bind chat events
     handleChatEvents(socket, io)
 
-    // Disconnect event
-    socket.on('disconnect', () => {
+    socket.on('disconnect', (reason) => {
+      console.log(`[socket] disconnected ${socket.id}: ${reason}`)
       handleDisconnect(socket, io)
     })
   })
 
-  // Broadcast stats every 5 seconds
   setInterval(() => {
-    io.emit('stats:update', sessionManager.getStats(matchmaking.getWaitingCount()))
-  }, 5000)
+    matchmaking.tryPair(io)
+
+    io.emit(
+      'stats:update',
+      sessionManager.getStats(matchmaking.getWaitingCount())
+    )
+  }, 1000)
 
   return io
 }
