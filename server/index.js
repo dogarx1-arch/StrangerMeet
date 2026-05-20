@@ -9,11 +9,16 @@ const attachSocket = require('./socket/index')
 const statsRoute = require('./routes/stats')
 const reportRoute = require('./routes/report')
 
+
+
 // 1. Connect MongoDB
 connectDB()
 
 // 2. Create Express app
 const app = express()
+
+
+
 
 app.use(cors({
   origin: env.CLIENT_ORIGIN,
@@ -22,6 +27,16 @@ app.use(cors({
 }))
 
 app.use(express.json())
+
+// Heath route
+app.get('/', (req, res) => {
+  res.status(200).json({
+    message: 'StrangerMeet backend is running',
+    status: 'ok',
+    clientOrigin: env.CLIENT_ORIGIN,
+    time: new Date().toISOString(),
+  })
+})
 
 // 3. Mount routes
 app.use('/api/stats', statsRoute)
