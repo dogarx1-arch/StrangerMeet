@@ -23,6 +23,7 @@ class Matchmaking {
     }
 
     const existingSession = sessionManager.findSessionBySocketId(socket.id)
+
     if (existingSession) {
       socket.emit('queue:error', {
         message: 'You are already in a chat session.',
@@ -51,6 +52,8 @@ class Matchmaking {
   }
 
   leaveQueue(socket) {
+    if (!socket) return
+
     const before = this.queue.length
 
     this.queue = this.queue.filter(
