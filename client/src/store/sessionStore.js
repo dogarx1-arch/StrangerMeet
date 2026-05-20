@@ -1,14 +1,12 @@
 import { create } from 'zustand'
 
 const useSessionStore = create((set) => ({
-  // State
   anonId: null,
-  status: 'idle', // 'idle' | 'queued' | 'matched' | 'chatting'
+  status: 'idle',
   partnerId: null,
   sessionId: null,
   messages: [],
 
-  // Actions
   setAnonId: (anonId) => set({ anonId }),
   setStatus: (status) => set({ status }),
   setPartnerId: (partnerId) => set({ partnerId }),
@@ -16,11 +14,16 @@ const useSessionStore = create((set) => ({
 
   addMessage: (message) =>
     set((state) => ({
-      messages: [...state.messages, {
-        ...message,
-        time: message.time || Date.now(),
-      }],
+      messages: [
+        ...state.messages,
+        {
+          ...message,
+          time: message.time || Date.now(),
+        },
+      ],
     })),
+
+  clearMessages: () => set({ messages: [] }),
 
   resetSession: () =>
     set({
