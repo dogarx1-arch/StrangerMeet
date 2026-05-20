@@ -1,73 +1,148 @@
-const { v4: uuidv4 } = require('uuid')
+const sessionManager = require('./sessionManager')
 
-class SessionManager {
+class Matchmaking {
   constructor() {
-    // Map<sessionId, { socketA, socketB, anonA, anonB, startTime }>
-    this.sessions = new Map()
-    this.onlineCount = 0
+    this.queue = []
+    this.recentMatches = []
   }
 
-  createSession(socketA, socketB, anonA, anonB) {
-    const sessionId = uuidv4()
-    
-    this.sessions.set(sessionId, {
-      socketA,
-      socketB,
-      anonA,
-      anonB,
-      startTime: Date.now()
-    })
-
-    return sessionId
-  }
-
-  getSession(sessionId) {
-    return this.sessions.get(sessionId)
-  }
-
-  endSession(sessionId) {
-    const session = this.sessions.get(sessionId)
-    if (session) {
-      this.sessions.delete(sessionId)
+  joinQueue(socket, anonId, io) {
+    if (!socket || !socket.connected) {
+      console.log('[matchmaking] ignored disconnected socket')
+      return
     }
-    return session
+
+    const safeAnonId = anonId || socket.data?.anonId
+
+    if (!safeAnonId) {
+      socket.emit('queue:error', {
+        message: 'Anon ID not ready. Please try again.',
+      })
+      console.log('[matchmaking] missing anonId for socket:', socket.id)
+      return
+    }
+
+    const existingSession = sessionManager.findSessionBySocketId(socket.id)
+    if (existingSession) {
+      socket.emit('queue:error', {
+        message: 'You are already in a chat session.',
+      })
+      return
+    }
+
+    this.removeDisconnectedSockets()
+
+    const alreadyQueued = this.queue.some(
+      (item) => item.socket.id === socket.id
+    )
+
+    if (!alreadyQueued) {
+      this.queue.push({
+        socket,
+        anonId: safeAnonId,
+        joinedAt: Date.now(),
+      })
+
+      console.log(`[matchmaking] joined queue: ${socket.id} / ${safeAnonId}`)
+    }
+
+    this.emitQueuePositions()
+    this.tryPair(io)
   }
 
-  incrementOnline() {
-    this.onlineCount++
+  leaveQueue(socket) {
+    const before = this.queue.length
+
+    this.queue = this.queue.filter(
+      (item) => item.socket.id !== socket.id
+    )
+
+    if (before !== this.queue.length) {
+      console.log('[matchmaking] left queue:', socket.id)
+    }
+
+    this.emitQueuePositions()
   }
 
-  decrementOnline() {
-    if (this.onlineCount > 0) this.onlineCount--
-  }
+  removeDisconnectedSockets() {
+    const before = this.queue.length
 
-  getStats(waitingCount = 0) {
-    return {
-      onlineCount: this.onlineCount,
-      inChatCount: this.sessions.size * 2,
-      waitingCount,
-      totalSessions: this.sessions.size
+    this.queue = this.queue.filter(
+      (item) => item.socket && item.socket.connected
+    )
+
+    const removed = before - this.queue.length
+
+    if (removed > 0) {
+      console.log(`[matchmaking] removed ${removed} stale socket(s)`)
     }
   }
 
-  // To check collision for generated IDs if needed
-  isAnonIdActive(anonId) {
-    for (const session of this.sessions.values()) {
-      if (session.anonA === anonId || session.anonB === anonId) return true
-    }
-    return false
-  }
-  
-  // Find a session by a given socketId
-  findSessionBySocketId(socketId) {
-    for (const [sessionId, session] of this.sessions.entries()) {
-      if (session.socketA.id === socketId || session.socketB.id === socketId) {
-        return { sessionId, session }
+  emitQueuePositions() {
+    this.queue.forEach((item, index) => {
+      if (item.socket.connected) {
+        item.socket.emit('queue:waiting', {
+          position: index + 1,
+          waitingCount: this.queue.length,
+        })
       }
+    })
+  }
+
+  tryPair(io) {
+    this.removeDisconnectedSockets()
+
+    while (this.queue.length >= 2) {
+      const user1 = this.queue.shift()
+      const user2 = this.queue.shift()
+
+      if (!user1.socket.connected || !user2.socket.connected) {
+        console.log('[matchmaking] skipped stale pair')
+        continue
+      }
+
+      const sessionId = sessionManager.createSession(
+        user1.socket,
+        user2.socket,
+        user1.anonId,
+        user2.anonId
+      )
+
+      console.log(
+        `[matchmaking] paired ${user1.anonId} with ${user2.anonId} in session ${sessionId}`
+      )
+
+      user1.socket.emit('queue:paired', {
+        sessionId,
+        partnerAnonId: user2.anonId,
+      })
+
+      user2.socket.emit('queue:paired', {
+        sessionId,
+        partnerAnonId: user1.anonId,
+      })
+
+      this.recentMatches.unshift({
+        id1: user1.anonId,
+        id2: user2.anonId,
+        time: Date.now(),
+      })
+
+      if (this.recentMatches.length > 3) {
+        this.recentMatches.pop()
+      }
+
+      io.emit('matches:recent', this.recentMatches)
+      io.emit('stats:update', sessionManager.getStats(this.getWaitingCount()))
     }
-    return null
+
+    this.emitQueuePositions()
+  }
+
+  getWaitingCount() {
+    this.removeDisconnectedSockets()
+    return this.queue.length
   }
 }
 
-// Export a singleton instance
-module.exports = new SessionManager()
+module.exports = new Matchmaking()
