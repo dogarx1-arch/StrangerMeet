@@ -1,16 +1,22 @@
 import { useState } from 'react'
 
-export default function ChatInputBar({ onSend, disabled = false }) {
+export default function ChatInputBar({ onSend, onTyping, disabled = false }) {
   const [text, setText] = useState('')
 
   const handleSend = () => {
     const trimmed = text.trim()
+
     if (!trimmed) return
+
     onSend(trimmed)
     setText('')
   }
 
   const handleKeyDown = (e) => {
+    if (onTyping && text.trim()) {
+      onTyping()
+    }
+
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       handleSend()
@@ -38,7 +44,9 @@ export default function ChatInputBar({ onSend, disabled = false }) {
         id="chat-input"
         autoComplete="off"
       />
+
       <button
+        type="button"
         onClick={handleSend}
         disabled={disabled || !text.trim()}
         className="
@@ -53,8 +61,18 @@ export default function ChatInputBar({ onSend, disabled = false }) {
         id="send-button"
         aria-label="Send message"
       >
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+        <svg
+          className="w-5 h-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
+          />
         </svg>
       </button>
     </div>
