@@ -10,12 +10,12 @@ let socketSingleton = null
 function getSocket() {
   if (!socketSingleton) {
     socketSingleton = io(SOCKET_URL, {
-      transports: ['websocket', 'polling'],
+      transports: ['polling', 'websocket'],
       autoConnect: true,
       reconnection: true,
       reconnectionAttempts: 10,
       reconnectionDelay: 1000,
-      timeout: 10000,
+      timeout: 20000,
       withCredentials: true,
     })
   }
