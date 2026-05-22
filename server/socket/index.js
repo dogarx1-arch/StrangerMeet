@@ -12,7 +12,7 @@ function attachSocket(server) {
       methods: ['GET', 'POST'],
       credentials: true,
     },
-    transports: ['websocket', 'polling'],
+    transports: ['polling', 'websocket'],
     pingTimeout: 20000,
     pingInterval: 25000,
   })
