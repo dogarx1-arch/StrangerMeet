@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/layout/Navbar'
-import AdSlot from '../components/layout/AdSlot'
 import SectionTag from '../components/ui/SectionTag'
 import BtnCobalt from '../components/ui/BtnCobalt'
 import BtnGhost from '../components/ui/BtnGhost'
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+  import.meta.env.VITE_API_BASE_URL || 'https://strangermeet.tech'
 
 export default function Landing() {
   const navigate = useNavigate()
@@ -69,8 +68,6 @@ export default function Landing() {
       <section className="px-4 pt-24 pb-12 sm:px-6 sm:pt-28 sm:pb-16 lg:px-8">
         <div className="mx-auto w-full max-w-5xl text-center">
           <div className="mb-8 flex w-full justify-center overflow-hidden">
-            <AdSlot size="leaderboard" className="hidden max-w-full md:flex" />
-            <AdSlot size="banner" className="flex max-w-full md:hidden" />
           </div>
 
           <SectionTag>Anonymous Chat Platform</SectionTag>
@@ -177,7 +174,7 @@ export default function Landing() {
                 key={num}
                 className="rounded-2xl bg-surface-0 p-6 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-md"
               >
-                <span className="block font-mono text-4xl font-bold text-cobalt-dim">
+                <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-cobalt font-mono text-sm font-bold text-white shadow-sm">
                   {num}
                 </span>
                 <h3 className="mt-3 font-serif text-lg font-bold text-ink">
@@ -220,8 +217,6 @@ export default function Landing() {
         </div>
 
         <div className="mt-6 flex w-full justify-center overflow-hidden">
-          <AdSlot size="leaderboard" className="hidden max-w-full md:flex" />
-          <AdSlot size="banner" className="flex max-w-full md:hidden" />
         </div>
       </footer>
     </main>

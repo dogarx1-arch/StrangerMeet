@@ -1,0 +1,9 @@
+<svg width="220" height="56" viewBox="0 0 220 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="220" height="56" rx="16" fill="#FBF9F4"/>
+  <circle cx="28" cy="28" r="20" fill="#0038A4"/>
+  <path d="M18 25.2C18 20.7 22.1 17 27.2 17C32.3 17 36.4 20.7 36.4 25.2C36.4 29.7 32.3 33.4 27.2 33.4H23.4L18.8 38V32.3C18.3 31.2 18 28.6 18 25.2Z" fill="white"/>
+  <path d="M31.5 30.5C34.9 30.5 37.8 28.2 38.5 25.1C40.6 26.4 42 28.5 42 31C42 34.8 38.6 37.9 34.4 37.9H31.6L28 41.5V37.1C26.5 36.4 25.3 35.3 24.6 34C25.4 34.2 26.2 34.3 27.2 34.3H31.5V30.5Z" fill="#E8EDF8"/>
+  <text x="58" y="25" fill="#1B1C19" font-family="Georgia, 'Times New Roman', serif" font-size="20" font-weight="700">Stranger</text>
+  <text x="144" y="25" fill="#0038A4" font-family="Georgia, 'Times New Roman', serif" font-size="20" font-weight="700">Meet</text>
+  <text x="59" y="41" fill="#7A7B77" font-family="Arial, sans-serif" font-size="9" letter-spacing="1.2">ANONYMOUS CHAT</text>
+</svg>

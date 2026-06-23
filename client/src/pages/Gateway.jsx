@@ -1,7 +1,6 @@
 // ============================================================
 // Gateway / Age Verification Page — StrangerMeet
-// Users must confirm they are 18+ and understand the ephemeral
-// nature of chats before entering the lobby.
+// Users must confirm they are 18+ and agree to Terms.
 // NOTE: No ads on this page per AdSense age-gate policy.
 // ============================================================
 
@@ -16,17 +15,14 @@ import useSessionStore from '../store/sessionStore'
 export default function Gateway() {
   const navigate = useNavigate()
 
-  // ── Pull setStatus action from global session store ──
   const setStatus = useSessionStore((s) => s.setStatus)
 
-  // ── Local checkbox state ──
   const [ageConfirmed, setAgeConfirmed] = useState(false)
-  const [ephemeralUnderstood, setEphemeralUnderstood] = useState(false)
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const [showTerms, setShowTerms] = useState(false)
 
-  // Both checkboxes must be checked before proceeding
-  const canProceed = ageConfirmed && ephemeralUnderstood
+  const canProceed = ageConfirmed && termsAccepted
 
-  // Handle the "Enter Lobby" button click
   const handleEnter = () => {
     if (!canProceed) return
     setStatus('idle')
@@ -35,17 +31,12 @@ export default function Gateway() {
 
   return (
     <div className="min-h-screen bg-vellum">
-      {/* ── Navigation with back button ── */}
       <Navbar showBack onBack={() => navigate('/')} />
 
-      {/* ── Main Content ── */}
       <div className="pt-20 pb-12 px-4">
         <div className="max-w-5xl mx-auto">
-
-          {/* Desktop: Two-panel layout | Mobile: Single card */}
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center min-h-[70vh]">
 
-            {/* ── Left Panel: Editorial content (desktop only) ── */}
             <div className="hidden lg:block">
               <SectionTag>Before You Enter</SectionTag>
               <h1 className="font-serif text-5xl xl:text-6xl font-black text-ink mt-4 leading-tight">
@@ -53,14 +44,13 @@ export default function Gateway() {
                 <br />
                 <span className="text-cobalt">adults only.</span>
               </h1>
+
               <p className="font-sans text-lg text-ink-secondary mt-6 leading-relaxed max-w-md">
                 StrangerMeet connects you with anonymous strangers for real-time text chat.
                 Conversations are unmoderated and ephemeral — nothing is recorded or stored.
               </p>
 
-              {/* Privacy guarantee list */}
               <div className="mt-8 space-y-4">
-                {/* Guarantee: No data */}
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-lg bg-cobalt-dim flex items-center justify-center flex-shrink-0 mt-0.5">
                     <svg className="w-4 h-4 text-cobalt" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -76,7 +66,6 @@ export default function Gateway() {
                   </div>
                 </div>
 
-                {/* Guarantee: Unmoderated warning */}
                 <div className="flex items-start gap-3">
                   <div className="w-8 h-8 rounded-lg bg-cobalt-dim flex items-center justify-center flex-shrink-0 mt-0.5">
                     <svg className="w-4 h-4 text-cobalt" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -94,11 +83,9 @@ export default function Gateway() {
               </div>
             </div>
 
-            {/* ── Right Panel: Confirmation card ── */}
             <div className="flex justify-center lg:justify-end">
               <div className="w-full max-w-md bg-surface-0 rounded-3xl p-8 sm:p-10 shadow-xl shadow-ink/5">
 
-                {/* Mobile: Compact brand header */}
                 <div className="lg:hidden text-center mb-8">
                   <h1 className="font-serif text-2xl font-bold text-ink">
                     Stranger<span className="text-cobalt">Meet</span>
@@ -108,7 +95,6 @@ export default function Gateway() {
                   </p>
                 </div>
 
-                {/* Desktop: Card section header */}
                 <div className="hidden lg:block mb-8">
                   <SectionTag>Confirm & Enter</SectionTag>
                   <h2 className="font-serif text-2xl font-bold text-ink mt-2">
@@ -116,16 +102,13 @@ export default function Gateway() {
                   </h2>
                 </div>
 
-                {/* 18+ age badge */}
                 <div className="flex justify-center mb-8">
                   <div className="w-20 h-20 rounded-2xl bg-danger-bg flex items-center justify-center">
                     <span className="font-serif text-3xl font-black text-danger">18+</span>
                   </div>
                 </div>
 
-                {/* ── Confirmation checkboxes ── */}
                 <div className="space-y-5 mb-8">
-                  {/* Checkbox 1: Age confirmation */}
                   <CheckboxCobalt
                     id="age-confirm"
                     checked={ageConfirmed}
@@ -133,30 +116,135 @@ export default function Gateway() {
                     label="I confirm I am 18 years of age or older"
                     sublabel="This is a legal requirement to use this service."
                   />
-                  {/* Checkbox 2: Ephemeral chat understanding */}
-                  <CheckboxCobalt
-                    id="ephemeral-confirm"
-                    checked={ephemeralUnderstood}
-                    onChange={(e) => setEphemeralUnderstood(e.target.checked)}
-                    label="I understand all chats are ephemeral"
-                    sublabel="Messages are never saved and vanish on disconnect."
-                  />
+
+                  <label
+                    htmlFor="terms-confirm"
+                    className="flex cursor-pointer items-start gap-3 rounded-2xl border border-surface-2 bg-surface-1 p-4 transition hover:border-cobalt/40"
+                  >
+                    <input
+                      id="terms-confirm"
+                      type="checkbox"
+                      checked={termsAccepted}
+                      onChange={(e) => setTermsAccepted(e.target.checked)}
+                      className="mt-1 h-5 w-5 accent-[#0038a4]"
+                    />
+
+                    <span className="font-sans text-sm leading-6 text-ink-secondary">
+                      I agree to the{' '}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault()
+                          setShowTerms(true)
+                        }}
+                        className="font-semibold text-cobalt underline underline-offset-2 hover:text-cobalt-dark"
+                      >
+                        Terms and Conditions
+                      </button>
+                      .
+                      <span className="mt-1 block text-xs text-ink-tertiary">
+                        Please read the terms before entering the chat.
+                      </span>
+                    </span>
+                  </label>
                 </div>
 
-                {/* ── Enter Lobby CTA ── */}
                 <BtnCobalt fullWidth size="lg" onClick={handleEnter} disabled={!canProceed}>
                   Enter Lobby →
                 </BtnCobalt>
 
                 <p className="font-mono text-[10px] text-ink-ghost text-center mt-4">
-                  By entering, you agree to our community guidelines.
+                  By entering, you confirm that you are 18+ and agree to follow our rules.
                 </p>
               </div>
             </div>
-
           </div>
         </div>
       </div>
+
+      {showTerms && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-surface-0 p-6 shadow-2xl sm:p-8">
+            <div className="mb-5 flex items-start justify-between gap-4">
+              <div>
+                <h2 className="font-serif text-2xl font-bold text-ink">
+                  Terms and Conditions
+                </h2>
+                <p className="mt-1 text-sm text-ink-tertiary">
+                  Please read these terms before using StrangerMeet.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowTerms(false)}
+                className="rounded-full bg-surface-1 px-3 py-1 text-lg font-bold text-ink hover:bg-cobalt hover:text-white"
+                aria-label="Close terms"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="space-y-4 text-sm leading-6 text-ink-secondary">
+              <p>
+                <strong>1. Age Requirement:</strong> StrangerMeet is only for users who are
+                18 years of age or older. By using this website, you confirm that you meet
+                this age requirement.
+              </p>
+
+              <p>
+                <strong>2. Anonymous Chat:</strong> StrangerMeet allows anonymous text chat
+                with strangers. You are responsible for your own words, behavior, and safety
+                during conversations.
+              </p>
+
+              <p>
+                <strong>3. No Illegal or Harmful Use:</strong> You must not use StrangerMeet
+                for harassment, threats, hate speech, sexual exploitation, scams, spam,
+                illegal activity, or sharing harmful content.
+              </p>
+
+              <p>
+                <strong>4. No Personal Information:</strong> For your safety, do not share
+                private information such as your home address, phone number, passwords,
+                financial details, or identity documents.
+              </p>
+
+              <p>
+                <strong>5. Ephemeral Conversations:</strong> StrangerMeet is designed for
+                temporary conversations. Chats are not intended to be permanent records.
+                However, users should still avoid sharing sensitive information.
+              </p>
+
+              <p>
+                <strong>6. Reporting and Safety:</strong> If another user behaves in a harmful
+                or abusive way, you may leave the chat or use the report option where available.
+              </p>
+
+              <p>
+                <strong>7. Service Availability:</strong> We may update, limit, suspend, or
+                discontinue parts of the service at any time for safety, maintenance, or legal
+                reasons.
+              </p>
+
+              <p>
+                <strong>8. Acceptance:</strong> By clicking the checkbox and entering the
+                lobby, you agree to these Terms and Conditions.
+              </p>
+            </div>
+
+            <div className="mt-6 flex justify-center">
+              <button
+                type="button"
+                onClick={() => setShowTerms(false)}
+                className="rounded-full bg-cobalt px-6 py-3 font-sans text-sm font-semibold text-white transition hover:bg-cobalt-dark"
+              >
+                I have read the terms
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

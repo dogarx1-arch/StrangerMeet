@@ -46,10 +46,13 @@ export default function Navbar({ onlineCount = 0, anonId = null, showBack = fals
               </button>
             )}
 
-            {/* Brand logo */}
-            <h1 className="font-serif text-lg font-bold tracking-tight" style={{ color: '#1b1c19' }}>
-              Stranger<span style={{ color: '#0038a4' }}>Meet</span>
-            </h1>
+                        {/* Brand logo */}
+            <img
+              src="/logo.svg"
+              alt="StrangerMeet"
+              className="h-10 w-auto"
+            />
+          
           </div>
 
           {/* ── Right: Anon ID pill + online count badge ── */}

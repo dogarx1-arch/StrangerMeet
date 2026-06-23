@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import Navbar from '../components/layout/Navbar'
-import AdSlot from '../components/layout/AdSlot'
 import ChatHeader from '../components/chat/ChatHeader'
 import MessageList from '../components/chat/MessageList'
 import ChatInputBar from '../components/chat/ChatInputBar'
@@ -10,7 +9,7 @@ import useSessionStore from '../store/sessionStore'
 import useSocket from '../hooks/useSocket'
 
 const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+  import.meta.env.VITE_API_BASE_URL || 'https://strangermeet.tech'
 
 export default function Chat() {
   const { sessionId } = useParams()
@@ -172,7 +171,6 @@ export default function Chat() {
         </div>
 
         <div className="hidden lg:flex w-48 p-4 items-start justify-center">
-          <AdSlot size="skyscraper" />
         </div>
       </div>
     </div>

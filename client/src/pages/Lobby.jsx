@@ -8,7 +8,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/layout/Navbar'
-import AdSlot from '../components/layout/AdSlot'
 import SectionTag from '../components/ui/SectionTag'
 import LiveStats from '../components/lobby/LiveStats'
 import RecentMatches from '../components/lobby/RecentMatches'
@@ -67,8 +66,6 @@ export default function Lobby() {
       <div className="pt-20 pb-12 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-center mb-6">
-            <AdSlot size="leaderboard" className="hidden md:flex" />
-            <AdSlot size="banner" className="flex md:hidden" />
           </div>
 
           <div className="grid lg:grid-cols-[1fr_300px] gap-8">
@@ -121,13 +118,10 @@ export default function Lobby() {
             </div>
 
             <div className="hidden lg:block space-y-6">
-              <AdSlot size="skyscraper" className="mx-auto" />
             </div>
           </div>
 
           <div className="flex justify-center mt-8">
-            <AdSlot size="leaderboard" className="hidden md:flex" />
-            <AdSlot size="banner" className="flex md:hidden" />
           </div>
         </div>
       </div>

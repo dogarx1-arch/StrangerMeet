@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/layout/Navbar'
-import AdSlot from '../components/layout/AdSlot'
 import ConcentricRings from '../components/searching/ConcentricRings'
 import ScanLog from '../components/searching/ScanLog'
 import BtnGhost from '../components/ui/BtnGhost'
@@ -89,8 +88,6 @@ export default function Searching() {
       <Navbar showBack onBack={handleCancel} />
 
       <div className="pt-20 flex justify-center px-4">
-        <AdSlot size="leaderboard" className="hidden md:flex" />
-        <AdSlot size="banner" className="flex md:hidden" />
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
@@ -118,8 +115,6 @@ export default function Searching() {
       </div>
 
       <div className="flex justify-center px-4 pb-8">
-        <AdSlot size="leaderboard" className="hidden md:flex" />
-        <AdSlot size="banner" className="flex md:hidden" />
       </div>
     </div>
   )
