@@ -3,7 +3,7 @@ import { io } from 'socket.io-client'
 import useSessionStore from '../store/sessionStore'
 
 const SOCKET_URL =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+  import.meta.env.VITE_API_BASE_URL || 'https://strangermeet.tech'
 
 let socketSingleton = null
 
