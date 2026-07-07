@@ -258,3 +258,19 @@
   outline: 2px solid var(--color-cobalt);
   outline-offset: 2px;
 }
+/* Mobile chat stability fix */
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  overscroll-behavior-y: none;
+}
+
+@supports (height: 100dvh) {
+  .mobile-safe-screen {
+    height: 100dvh;
+  }
+}

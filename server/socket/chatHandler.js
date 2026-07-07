@@ -46,7 +46,7 @@ function handleChatEvents(socket, io) {
       session.socketA.id === socket.id ? session.socketB : session.socketA
 
     if (partnerSocket.connected) {
-      partnerSocket.emit('chat:skipped')
+      partnerSocket.emit('chat:skipped', { reason: 'Chat ended. The stranger skipped the chat.' })
     }
 
     if (requeue && currentSocket.connected) {
@@ -64,11 +64,30 @@ function handleChatEvents(socket, io) {
   })
 
   socket.on('chat:report', ({ sessionId, reason }) => {
+    if (!sessionId) return
+
     console.log('[chat:report]', {
       socketId: socket.id,
       sessionId,
       reason,
     })
+
+    const session = sessionManager.endSession(sessionId)
+    if (!session) return
+
+    const partnerSocket =
+      session.socketA.id === socket.id ? session.socketB : session.socketA
+
+    if (partnerSocket.connected) {
+      partnerSocket.emit('chat:partner-disconnected', {
+        reason: 'Chat ended. The stranger has left the chat.'
+      })
+    }
+
+    io.emit(
+      'stats:update',
+      sessionManager.getStats(matchmaking.getWaitingCount())
+    )
   })
 }
 
@@ -86,7 +105,7 @@ function handleDisconnect(socket, io) {
       session.socketA.id === socket.id ? session.socketB : session.socketA
 
     if (partnerSocket.connected) {
-      partnerSocket.emit('chat:partner-disconnected')
+      partnerSocket.emit('chat:partner-disconnected', { reason: 'Chat ended. The stranger disconnected.' })
     }
   }
 

@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Disallow: /enter
+Disallow: /lobby
+Disallow: /matching
+Disallow: /chat/
+
+Sitemap: https://strangermeet.tech/sitemap.xml

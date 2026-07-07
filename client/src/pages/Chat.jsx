@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import Navbar from '../components/layout/Navbar'
 import ChatHeader from '../components/chat/ChatHeader'
 import MessageList from '../components/chat/MessageList'
 import ChatInputBar from '../components/chat/ChatInputBar'
@@ -27,6 +26,8 @@ export default function Chat() {
 
   const [isTyping, setIsTyping] = useState(false)
   const [partnerConnected, setPartnerConnected] = useState(true)
+  const [chatEnded, setChatEnded] = useState(false)
+  const [endReason, setEndReason] = useState('Chat ended.')
 
   useEffect(() => {
     if (!sessionId || !partnerId) {
@@ -38,11 +39,15 @@ export default function Chat() {
     if (!socket) return
 
     const handleMessage = ({ text, from, time }) => {
+      if (chatEnded) return
+
       addMessage({ text, from, time })
       setIsTyping(false)
     }
 
     const handleTyping = () => {
+      if (chatEnded) return
+
       setIsTyping(true)
 
       setTimeout(() => {
@@ -50,30 +55,42 @@ export default function Chat() {
       }, 3000)
     }
 
-    const handlePartnerLeft = () => {
+    const handlePartnerEnded = (payload = {}) => {
       setPartnerConnected(false)
-
-      setTimeout(() => {
-        resetSession()
-        navigate('/lobby')
-      }, 3000)
+      setChatEnded(true)
+      setIsTyping(false)
+      setEndReason(payload.reason || 'Chat ended. The stranger has left or disconnected.')
     }
 
     socket.on('chat:message', handleMessage)
     socket.on('chat:typing', handleTyping)
-    socket.on('chat:skipped', handlePartnerLeft)
-    socket.on('chat:partner-disconnected', handlePartnerLeft)
+    socket.on('chat:skipped', handlePartnerEnded)
+    socket.on('chat:partner-disconnected', handlePartnerEnded)
 
     return () => {
       socket.off('chat:message', handleMessage)
       socket.off('chat:typing', handleTyping)
-      socket.off('chat:skipped', handlePartnerLeft)
-      socket.off('chat:partner-disconnected', handlePartnerLeft)
+      socket.off('chat:skipped', handlePartnerEnded)
+      socket.off('chat:partner-disconnected', handlePartnerEnded)
     }
-  }, [socket, addMessage, resetSession, navigate])
+  }, [socket, addMessage, chatEnded])
+
+  useEffect(() => {
+    const notifyServerBeforeLeaving = () => {
+      if (socket && sessionId && !chatEnded) {
+        socket.emit('chat:skip', { sessionId })
+      }
+    }
+
+    window.addEventListener('beforeunload', notifyServerBeforeLeaving)
+
+    return () => {
+      window.removeEventListener('beforeunload', notifyServerBeforeLeaving)
+    }
+  }, [socket, sessionId, chatEnded])
 
   const handleSend = useCallback((text) => {
-    if (!socket || !sessionId || !text.trim()) return
+    if (!socket || !sessionId || !text.trim() || chatEnded || !partnerConnected) return
 
     socket.emit('chat:message', {
       text,
@@ -85,40 +102,74 @@ export default function Chat() {
       from: anonId,
       time: Date.now(),
     })
-  }, [socket, sessionId, anonId, addMessage])
+  }, [socket, sessionId, anonId, addMessage, chatEnded, partnerConnected])
 
   const handleTyping = useCallback(() => {
-    if (!socket || !sessionId) return
+    if (!socket || !sessionId || chatEnded || !partnerConnected) return
 
     socket.emit('chat:typing', {
       sessionId,
     })
-  }, [socket, sessionId])
+  }, [socket, sessionId, chatEnded, partnerConnected])
 
   const handleSkip = () => {
-    if (!socket || !sessionId) return
-
-    socket.emit('chat:skip', { sessionId })
+    if (socket && sessionId && !chatEnded) {
+      socket.emit('chat:skip', { sessionId })
+    }
 
     resetSession()
     navigate('/matching')
   }
 
   const handleReport = () => {
+    const reportedUser = partnerId
+    const currentSession = sessionId
+
+    const reportPayload = {
+      reportedAnonId: reportedUser,
+      reporterAnonId: anonId,
+      reason: 'inappropriate',
+      sessionId: currentSession,
+    }
+
     fetch(`${API_BASE_URL}/api/report`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        reportedAnonId: partnerId,
-        reporterAnonId: anonId,
-        reason: 'inappropriate',
-        sessionId,
-      }),
+      body: JSON.stringify(reportPayload),
     }).catch(() => {})
+
+    if (socket && currentSession && !chatEnded) {
+      socket.emit('chat:report', {
+        sessionId: currentSession,
+        reason: 'inappropriate',
+      })
+    }
+
+    navigate('/report', {
+      replace: true,
+      state: {
+        reportedAnonId: reportedUser,
+        sessionId: currentSession,
+      },
+    })
+
+    setTimeout(() => {
+      resetSession()
+    }, 0)
+  }
+
+  const handleReturnLobby = () => {
+    resetSession()
+    navigate('/lobby')
+  }
+
+  const handleFindNew = () => {
+    resetSession()
+    navigate('/matching')
   }
 
   const handleEndSession = () => {
-    if (socket && sessionId) {
+    if (socket && sessionId && !chatEnded) {
       socket.emit('chat:skip', { sessionId })
     }
 
@@ -126,43 +177,44 @@ export default function Chat() {
     navigate('/lobby')
   }
 
-  const canSend = socketConnected && partnerConnected
+  const canSend = socketConnected && partnerConnected && !chatEnded
 
   return (
-    <div className="h-screen bg-vellum flex flex-col">
-      <Navbar anonId={anonId} />
+    <div className="fixed inset-0 z-40 h-[100dvh] w-screen bg-vellum flex overflow-hidden overscroll-none">
+      <div className="hidden lg:block w-72 p-4 overflow-y-auto">
+        <SessionInfoPanel
+          sessionId={sessionId}
+          messageCount={messages.length}
+          onReport={handleReport}
+          onEndSession={handleEndSession}
+        />
+      </div>
 
-      <div className="flex-1 pt-14 flex overflow-hidden">
-        <div className="hidden lg:block w-72 p-4 overflow-y-auto">
-          <SessionInfoPanel
-            sessionId={sessionId}
-            messageCount={messages.length}
-            onReport={handleReport}
-            onEndSession={handleEndSession}
-          />
-        </div>
+      <div className="relative flex-1 flex flex-col min-w-0 h-full bg-surface-0 lg:rounded-2xl lg:my-4 lg:mr-4 overflow-hidden overscroll-none">
+        <ChatHeader
+          partnerAnonId={partnerId}
+          onSkip={handleSkip}
+          onReport={handleReport}
+          connected={canSend}
+        />
 
-        <div className="flex-1 flex flex-col min-w-0 bg-surface-0 lg:rounded-t-2xl">
-          <ChatHeader
-            partnerAnonId={partnerId}
-            onSkip={handleSkip}
-            connected={canSend}
-          />
+        {!partnerConnected && (
+          <div className="shrink-0 bg-danger-bg px-4 py-2 text-center">
+            <span className="font-sans text-sm text-danger font-medium">
+              Stranger disconnected.
+            </span>
+          </div>
+        )}
 
-          {!partnerConnected && (
-            <div className="bg-danger-bg px-4 py-2 text-center">
-              <span className="font-sans text-sm text-danger font-medium">
-                Stranger disconnected. Returning to lobby...
-              </span>
-            </div>
-          )}
-
+        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
           <MessageList
             messages={messages}
             isTyping={isTyping}
             myAnonId={anonId}
           />
+        </div>
 
+        <div className="shrink-0 bg-surface-0 border-t border-ghost pb-[env(safe-area-inset-bottom)]">
           <ChatInputBar
             onSend={handleSend}
             onTyping={handleTyping}
@@ -170,8 +222,41 @@ export default function Chat() {
           />
         </div>
 
-        <div className="hidden lg:flex w-48 p-4 items-start justify-center">
-        </div>
+        {chatEnded && (
+          <div className="absolute inset-0 z-40 flex items-center justify-center bg-black/35 px-4">
+            <div className="w-full max-w-sm rounded-3xl bg-surface-0 p-6 text-center shadow-xl">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-danger-bg">
+                <span className="font-serif text-2xl font-bold text-danger">!</span>
+              </div>
+
+              <h2 className="mt-4 font-serif text-2xl font-bold text-ink">
+                Chat ended
+              </h2>
+
+              <p className="mt-3 text-sm leading-6 text-ink-secondary">
+                {endReason}
+              </p>
+
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={handleReturnLobby}
+                  className="rounded-full border border-surface-2 px-4 py-3 font-sans text-sm font-semibold text-ink-secondary transition hover:border-cobalt hover:text-cobalt"
+                >
+                  Lobby
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleFindNew}
+                  className="rounded-full bg-cobalt px-4 py-3 font-sans text-sm font-semibold text-white transition hover:bg-cobalt-strong"
+                >
+                  New Chat
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
