@@ -28,6 +28,22 @@ export default function Chat() {
   const [partnerConnected, setPartnerConnected] = useState(true)
   const [chatEnded, setChatEnded] = useState(false)
   const [endReason, setEndReason] = useState('Chat ended.')
+  const [viewportHeight, setViewportHeight] = useState(null)
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.visualViewport) return
+
+    const vv = window.visualViewport
+
+    const updateHeight = () => setViewportHeight(vv.height)
+    updateHeight()
+
+    vv.addEventListener('resize', updateHeight)
+
+    return () => {
+      vv.removeEventListener('resize', updateHeight)
+    }
+  }, [])
 
   useEffect(() => {
     if (!sessionId || !partnerId) {
@@ -83,9 +99,11 @@ export default function Chat() {
     }
 
     window.addEventListener('beforeunload', notifyServerBeforeLeaving)
+    window.addEventListener('pagehide', notifyServerBeforeLeaving)
 
     return () => {
       window.removeEventListener('beforeunload', notifyServerBeforeLeaving)
+      window.removeEventListener('pagehide', notifyServerBeforeLeaving)
     }
   }, [socket, sessionId, chatEnded])
 
@@ -180,7 +198,10 @@ export default function Chat() {
   const canSend = socketConnected && partnerConnected && !chatEnded
 
   return (
-    <div className="fixed inset-0 z-40 h-[100dvh] w-screen bg-vellum flex overflow-hidden overscroll-none">
+    <div
+      className="fixed inset-0 z-40 h-[100dvh] w-screen bg-vellum flex overflow-hidden overscroll-none"
+      style={viewportHeight ? { height: `${viewportHeight}px` } : undefined}
+    >
       <div className="hidden lg:block w-72 p-4 overflow-y-auto">
         <SessionInfoPanel
           sessionId={sessionId}
@@ -206,7 +227,7 @@ export default function Chat() {
           </div>
         )}
 
-        <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+        <div className="flex-1 min-h-0 overscroll-contain">
           <MessageList
             messages={messages}
             isTyping={isTyping}

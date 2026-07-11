@@ -1,9 +1,13 @@
 const sessionManager = require('./sessionManager')
 const matchmaking = require('./matchmaking')
+const { validateMessage, clearRateLimit } = require('../utils/messageFilter')
 
 function handleChatEvents(socket, io) {
   socket.on('chat:message', ({ text, sessionId }) => {
-    if (!text || !sessionId) return
+    if (!sessionId) return
+
+    const result = validateMessage(text, socket.id)
+    if (!result.ok) return
 
     const session = sessionManager.getSession(sessionId)
     if (!session) return
@@ -14,8 +18,15 @@ function handleChatEvents(socket, io) {
 
     if (!partnerSocket.connected) return
 
+    if (result.flagged) {
+      console.log('[chat:message] flagged spam pattern', {
+        socketId: socket.id,
+        sessionId,
+      })
+    }
+
     partnerSocket.emit('chat:message', {
-      text,
+      text: result.text,
       from: senderAnonId,
       time: Date.now(),
     })
@@ -92,6 +103,7 @@ function handleChatEvents(socket, io) {
 }
 
 function handleDisconnect(socket, io) {
+  clearRateLimit(socket.id)
   matchmaking.leaveQueue(socket)
 
   const sessionInfo = sessionManager.findSessionBySocketId(socket.id)

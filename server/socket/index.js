@@ -1,5 +1,10 @@
 const { Server } = require('socket.io')
 const env = require('../config/env')
+
+const allowedOrigins = [
+  'https://strangermeet.tech',
+  'https://www.strangermeet.tech',
+]
 const sessionManager = require('./sessionManager')
 const matchmaking = require('./matchmaking')
 const { handleChatEvents, handleDisconnect } = require('./chatHandler')
@@ -8,7 +13,7 @@ const generateAnonId = require('../utils/anonId')
 function attachSocket(server) {
   const io = new Server(server, {
     cors: {
-      origin: env.CLIENT_ORIGIN,
+      origin: allowedOrigins,
       methods: ['GET', 'POST'],
       credentials: true,
     },

@@ -1,21 +1,52 @@
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
+
+const MAX_MESSAGE_LENGTH = 1000
+const TYPING_EMIT_INTERVAL_MS = 2000
 
 export default function ChatInputBar({ onSend, onTyping, disabled = false }) {
   const [text, setText] = useState('')
+  const isComposingRef = useRef(false)
+  const lastTypingEmitRef = useRef(0)
+
+  const emitTypingThrottled = useCallback(() => {
+    if (!onTyping) return
+
+    const now = Date.now()
+
+    if (now - lastTypingEmitRef.current > TYPING_EMIT_INTERVAL_MS) {
+      lastTypingEmitRef.current = now
+      onTyping()
+    }
+  }, [onTyping])
 
   const handleSend = () => {
-    const trimmed = text.trim()
+    const trimmed = text.trim().slice(0, MAX_MESSAGE_LENGTH)
 
-    if (!trimmed) return
+    if (!trimmed || disabled) return
 
     onSend(trimmed)
     setText('')
   }
 
-  const handleKeyDown = (e) => {
-    if (onTyping && text.trim()) {
-      onTyping()
+  const handleChange = (e) => {
+    const value = e.target.value.slice(0, MAX_MESSAGE_LENGTH)
+    setText(value)
+
+    if (value.trim()) {
+      emitTypingThrottled()
     }
+  }
+
+  const handleCompositionStart = () => {
+    isComposingRef.current = true
+  }
+
+  const handleCompositionEnd = () => {
+    isComposingRef.current = false
+  }
+
+  const handleKeyDown = (e) => {
+    if (isComposingRef.current || e.keyCode === 229) return
 
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -28,10 +59,15 @@ export default function ChatInputBar({ onSend, onTyping, disabled = false }) {
       <input
         type="text"
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={handleChange}
         onKeyDown={handleKeyDown}
+        onCompositionStart={handleCompositionStart}
+        onCompositionEnd={handleCompositionEnd}
         placeholder="Type a message..."
         disabled={disabled}
+        maxLength={MAX_MESSAGE_LENGTH}
+        enterKeyHint="send"
+        inputMode="text"
         className="
           flex-1 px-4 py-2.5
           font-sans text-sm text-ink placeholder:text-ink-ghost

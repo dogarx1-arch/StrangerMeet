@@ -17,11 +17,21 @@ connectDB()
 // 2. Create Express app
 const app = express()
 
+const allowedOrigins = [
+  'https://strangermeet.tech',
+  'https://www.strangermeet.tech',
+]
+
 
 
 
 app.use(cors({
-  origin: env.CLIENT_ORIGIN,
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true)
+    }
+    return callback(new Error('Not allowed by CORS'))
+  },
   methods: ['GET', 'POST'],
   credentials: true
 }))
@@ -33,7 +43,7 @@ app.get('/', (req, res) => {
   res.status(200).json({
     message: 'StrangerMeet backend is running',
     status: 'ok',
-    clientOrigin: env.CLIENT_ORIGIN,
+    clientOrigin: allowedOrigins,
     time: new Date().toISOString(),
   })
 })
@@ -49,5 +59,5 @@ attachSocket(server)
 // 5. Listen
 server.listen(env.PORT, () => {
   console.log(`[server] Running on port ${env.PORT}`)
-  console.log(`[server] Accepting CORS from ${env.CLIENT_ORIGIN}`)
+  console.log(`[server] Accepting CORS from ${allowedOrigins.join(', ')}`)
 })
