@@ -16,6 +16,7 @@ services:
     env_file: .env
     environment:
       - MONGODB_URI=mongodb://mongo:27017/strangermeet
+      - PERSPECTIVE_API_KEY=${PERSPECTIVE_API_KEY}
     depends_on:
       - mongo
     networks:

@@ -47,7 +47,7 @@ export default function Gateway() {
 
               <p className="font-sans text-lg text-ink-secondary mt-6 leading-relaxed max-w-md">
                 StrangerMeet connects you with anonymous strangers for real-time text chat.
-                Conversations are unmoderated and ephemeral — nothing is recorded or stored.
+                Conversations are ephemeral and safety-guided — messages are automatically screened before delivery.
               </p>
 
               <div className="mt-8 space-y-4">
@@ -74,9 +74,9 @@ export default function Gateway() {
                     </svg>
                   </div>
                   <div>
-                    <h3 className="font-sans text-sm font-semibold text-ink">Unmoderated content</h3>
+                    <h3 className="font-sans text-sm font-semibold text-ink">Real-time safety tools</h3>
                     <p className="font-sans text-sm text-ink-tertiary">
-                      Conversations may contain mature themes. Use the report button if needed.
+                      Messages are automatically screened, and you can report or skip a stranger at any time.
                     </p>
                   </div>
                 </div>

@@ -1,9 +1,10 @@
 const sessionManager = require('./sessionManager')
 const matchmaking = require('./matchmaking')
 const { validateMessage, clearRateLimit } = require('../utils/messageFilter')
+const { moderateMessage } = require('../utils/moderation')
 
 function handleChatEvents(socket, io) {
-  socket.on('chat:message', ({ text, sessionId }) => {
+  socket.on('chat:message', async ({ text, sessionId }) => {
     if (!sessionId) return
 
     const result = validateMessage(text, socket.id)
@@ -24,6 +25,25 @@ function handleChatEvents(socket, io) {
         sessionId,
       })
     }
+
+    const moderation = await moderateMessage(result.text)
+
+    if (moderation.blocked) {
+      console.log('[chat:message] blocked by moderation', {
+        socketId: socket.id,
+        sessionId,
+        reason: moderation.reason,
+      })
+
+      socket.emit('chat:message-blocked', {
+        reason: 'Your message was blocked for violating our community guidelines.',
+      })
+
+      return
+    }
+
+    const stillActive = sessionManager.getSession(sessionId)
+    if (!stillActive || !partnerSocket.connected) return
 
     partnerSocket.emit('chat:message', {
       text: result.text,

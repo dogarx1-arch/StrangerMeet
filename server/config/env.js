@@ -15,4 +15,5 @@ module.exports = {
   MONGODB_URI: process.env.MONGODB_URI || 'mongodb://localhost:27017/strangermeet',
   CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
   NODE_ENV: process.env.NODE_ENV || 'development',
+  PERSPECTIVE_API_KEY: process.env.PERSPECTIVE_API_KEY || '',
 }

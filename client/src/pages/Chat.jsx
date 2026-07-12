@@ -78,16 +78,27 @@ export default function Chat() {
       setEndReason(payload.reason || 'Chat ended. The stranger has left or disconnected.')
     }
 
+    const handleMessageBlocked = (payload = {}) => {
+      addMessage({
+        text: payload.reason || 'Your message was blocked for violating our community guidelines.',
+        from: 'system',
+        time: Date.now(),
+        system: true,
+      })
+    }
+
     socket.on('chat:message', handleMessage)
     socket.on('chat:typing', handleTyping)
     socket.on('chat:skipped', handlePartnerEnded)
     socket.on('chat:partner-disconnected', handlePartnerEnded)
+    socket.on('chat:message-blocked', handleMessageBlocked)
 
     return () => {
       socket.off('chat:message', handleMessage)
       socket.off('chat:typing', handleTyping)
       socket.off('chat:skipped', handlePartnerEnded)
       socket.off('chat:partner-disconnected', handlePartnerEnded)
+      socket.off('chat:message-blocked', handleMessageBlocked)
     }
   }, [socket, addMessage, chatEnded])
 

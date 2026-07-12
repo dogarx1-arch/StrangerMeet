@@ -60,7 +60,13 @@ export default function MessageList({ messages = [], isTyping = false, myAnonId 
       )}
 
       {messages.map((msg, i) =>
-        msg.from === myAnonId ? (
+        msg.system ? (
+          <div key={i} className="flex justify-center">
+            <span className="max-w-[85%] rounded-full bg-danger-bg px-4 py-1.5 text-center font-sans text-xs font-medium text-danger">
+              {msg.text}
+            </span>
+          </div>
+        ) : msg.from === myAnonId ? (
           <BubbleOwn key={i} text={msg.text} time={formatTime(msg.time)} />
         ) : (
           <BubbleStranger key={i} text={msg.text} time={formatTime(msg.time)} />
