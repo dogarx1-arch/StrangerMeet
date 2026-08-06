@@ -1,5 +1,5 @@
 import Navbar from '../components/layout/Navbar'
-
+import { Helmet } from 'react-helmet-async'
 export default function PrivacyPolicy() {
   const privacyLink = 'https://mail.google.com/mail/u/0/?fs=1&to=privacy@strangermeet.tech&tf=cm'
   const reportLink = 'https://mail.google.com/mail/u/0/?fs=1&to=report@strangermeet.tech&tf=cm'
@@ -8,7 +8,10 @@ export default function PrivacyPolicy() {
   return (
     <div className="min-h-screen bg-vellum">
       <Navbar />
-
+<Helmet>
+  <title>Privacy Policy — StrangerMeet</title>
+  <meta name="description" content="Read the StrangerMeet Privacy Policy to understand how privacy, cookies, technical data, and user safety are handled." />
+</Helmet>
       <main className="mx-auto max-w-4xl px-4 py-24 sm:px-6 lg:px-8">
         <article className="rounded-3xl bg-surface-0 p-8 shadow-sm sm:p-10">
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-cobalt">Privacy Policy</p>

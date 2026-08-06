@@ -1,4 +1,5 @@
 import Navbar from '../components/layout/Navbar'
+import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router-dom'
 
 const posts = [
@@ -48,7 +49,10 @@ export default function Blog() {
   return (
     <div className="min-h-screen bg-vellum">
       <Navbar />
-
+  <Helmet>
+        <title>Blog — StrangerMeet</title>
+        <meta name="description" content="Read StrangerMeet blog articles about anonymous chat safety, online privacy, reporting abuse, digital wellbeing, and safer conversations online." />
+      </Helmet>
       <main className="mx-auto max-w-6xl px-4 py-24 sm:px-6 lg:px-8">
         <div className="text-center">
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-cobalt">Blog</p>

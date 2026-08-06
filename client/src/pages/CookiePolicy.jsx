@@ -1,10 +1,13 @@
 import Navbar from '../components/layout/Navbar'
-
+import { Helmet } from 'react-helmet-async'
 export default function CookiePolicy() {
   return (
     <div className="min-h-screen bg-vellum">
       <Navbar />
-
+<Helmet>
+  <title>Cookie Policy — StrangerMeet</title>
+  <meta name="description" content="Learn how StrangerMeet may use cookies, analytics, advertising cookies, and browser controls to support website functionality and transparency." />
+</Helmet>
       <main className="mx-auto max-w-4xl px-4 py-24 sm:px-6 lg:px-8">
         <article className="rounded-3xl bg-surface-0 p-8 shadow-sm sm:p-10">
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-cobalt">Cookies</p>

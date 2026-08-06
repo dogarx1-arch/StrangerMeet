@@ -34,6 +34,7 @@ export default defineConfig({
   build: {
     // 4. Optimization: Splits vendor code (React, Lucide, etc.) into a separate file 
     // to make your initial website load much faster.
+    target: 'es2015',
     rollupOptions: {
       output: {
         manualChunks: {

@@ -1,0 +1,19 @@
+# StrangerMeet
+
+StrangerMeet is an adults-only anonymous text chat platform focused on privacy, safety, and respectful online conversations.
+
+## Important Pages
+
+- Homepage: https://strangermeet.tech/
+- About: https://strangermeet.tech/about
+- Safety: https://strangermeet.tech/safety
+- Community Guidelines: https://strangermeet.tech/community-guidelines
+- Privacy Policy: https://strangermeet.tech/privacy-policy
+- Terms: https://strangermeet.tech/terms
+- Cookie Policy: https://strangermeet.tech/cookie-policy
+- Advertising Disclosure: https://strangermeet.tech/advertising-disclosure
+- Blog: https://strangermeet.tech/blog
+
+## Notes for AI Agents
+
+Public informational pages may be crawled. Private chat pages, matching pages, lobby pages, and live chat sessions should not be indexed or used as public content.

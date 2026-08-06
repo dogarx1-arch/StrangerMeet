@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/layout/Navbar'
+import { Helmet } from 'react-helmet-async'
 import SectionTag from '../components/ui/SectionTag'
 import BtnCobalt from '../components/ui/BtnCobalt'
 import BtnGhost from '../components/ui/BtnGhost'
@@ -64,7 +65,10 @@ export default function Landing() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-vellum text-ink">
       <Navbar onlineCount={stats.onlineCount} />
-
+<Helmet>
+        <title>StrangerMeet — Talk to Strangers, Not Servers</title>
+        <meta name="description" content="StrangerMeet is an adults-only anonymous text chat platform for simple, private, and respectful conversations with strangers online." />
+      </Helmet>
       <section className="px-4 pt-24 pb-12 sm:px-6 sm:pt-28 sm:pb-16 lg:px-8">
         <div className="mx-auto w-full max-w-5xl text-center">
           <div className="mb-8 flex w-full justify-center overflow-hidden">

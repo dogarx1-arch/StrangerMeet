@@ -1,9 +1,11 @@
 import { Link, useParams } from 'react-router-dom'
 import Navbar from '../components/layout/Navbar'
+import { Helmet } from 'react-helmet-async'
 
 const articles = {
   'how-to-stay-safe-anonymous-chat': {
     title: 'How to Stay Safe in Anonymous Chat',
+description: 'Learn practical safety tips for anonymous chat, including protecting your identity, avoiding scams, leaving unsafe conversations, and reporting abuse .',
     category: 'Safety',
     paragraphs: [
       'Anonymous chat can be interesting because it allows people to talk without the pressure of profiles, followers, or long-term identity. However, the same anonymity that makes these platforms feel open can also create risks. A stranger may be friendly, but they are still someone you do not know. The safest approach is to enjoy the conversation while keeping clear boundaries. You should never treat an anonymous chat like a trusted private relationship at the beginning.',
@@ -18,6 +20,7 @@ const articles = {
   },
   'online-privacy-tips-for-beginners': {
     title: 'Online Privacy Tips for Beginners',
+description : 'Learn beginner-friendly online privacy tips including password safety, cookie control, link safety, browser settings, and reducing personal exposure.',
     category: 'Privacy',
     paragraphs: [
       'Online privacy begins with understanding that every action on the internet can create traces. Websites, apps, advertisers, browsers, and other users may collect or observe different kinds of information. Beginners often think privacy only means hiding a name, but privacy also includes device information, location clues, account activity, search behavior, cookies, and shared content.',
@@ -32,6 +35,7 @@ const articles = {
   },
   'what-is-ephemeral-messaging': {
     title: 'What Is Ephemeral Messaging?',
+description : 'Understand ephemeral messaging, disappearing chats, temporary communication, and the privacy limits users should know before sharing information.',
     category: 'Privacy',
     paragraphs: [
       'Ephemeral messaging means messages are temporary by design. They may disappear after a chat ends, after a time limit, or after being viewed. The idea is simple: not every conversation needs to be stored forever. In anonymous chat, temporary communication can make conversations feel lighter and more private.',
@@ -46,6 +50,7 @@ const articles = {
   },
   'how-to-report-online-harassment': {
     title: 'How to Report Online Harassment',
+    description: 'Learn how to report online harassment safely, what details to include, when to leave a chat, and how to protect your privacy while reporting abuse.',
     category: 'Safety',
     paragraphs: [
       'Online harassment includes repeated insults, threats, hate speech, sexual pressure, stalking, impersonation, blackmail, or attempts to intimidate someone. In anonymous chat, harassment may happen quickly because the other person feels hidden. Reporting helps platforms understand unsafe behavior, but your first step should always be to protect yourself.',
@@ -60,6 +65,7 @@ const articles = {
   },
   'webrtc-explained': {
     title: 'WebRTC Explained for Chat Users',
+description :'Learn what WebRTC means for chat users, including real-time communication, browser permissions, IP exposure concerns, and privacy basics.',
     category: 'Technology',
     paragraphs: [
       'WebRTC stands for Web Real-Time Communication. It is a browser technology that allows real-time audio, video, and data connections between users. Many chat, video meeting, and communication tools use WebRTC because it can create fast direct communication inside the browser without requiring separate software.',
@@ -74,6 +80,7 @@ const articles = {
   },
   'vpn-for-anonymous-chat': {
     title: 'Should You Use a VPN for Anonymous Chat?',
+decription :'Learn whether a VPN helps with anonymous chat privacy, what it can and cannot protect, and why user behavior matters most.',
     category: 'Privacy',
     paragraphs: [
       'A VPN, or Virtual Private Network, routes your internet traffic through another server before it reaches websites. Many people use VPNs to add privacy from local networks, public Wi-Fi, or internet providers. In anonymous chat, a VPN can add a layer of separation between your real network and the websites you visit.',
@@ -88,6 +95,7 @@ const articles = {
   },
   'random-chat-mental-health': {
     title: 'Random Chat and Mental Health',
+description : 'Learn how random chat can affect mental health, why time limits matter, and how to use anonymous chat in a balanced and safe way.',
     category: 'Wellbeing',
     paragraphs: [
       'Random chat can feel exciting because you never know who you will meet. It can reduce boredom, create surprising conversations, and help people feel less alone for a short time. For some users, a casual anonymous conversation can be a break from routine. However, random chat can also affect mood, stress, and self-esteem.',
@@ -102,6 +110,7 @@ const articles = {
   },
   'omegle-alternatives-2026': {
     title: 'Omegle Alternatives in 2026',
+description :'Explore what to look for in Omegle alternatives in 2026, including safety pages, privacy rules, reporting options, and text-only anonymous chat.',
     category: 'Guides',
     paragraphs: [
       'After the decline of older random chat platforms, many users began looking for alternatives that feel simpler, safer, and more respectful. In 2026, people want anonymous chat tools that are easy to use but also clearer about safety, privacy, and user expectations. A good alternative should not only connect strangers; it should also help users understand boundaries.',
@@ -124,6 +133,9 @@ export default function BlogArticle() {
     return (
       <div className="min-h-screen bg-vellum">
         <Navbar />
+  <Helmet>
+          <title>Article Not Found — StrangerMeet</title>
+        </Helmet>
         <main className="mx-auto max-w-3xl px-4 py-24">
           <div className="rounded-3xl bg-surface-0 p-8 shadow-sm">
             <h1 className="font-serif text-4xl font-bold text-ink">Article not found</h1>
@@ -142,6 +154,10 @@ export default function BlogArticle() {
   return (
     <div className="min-h-screen bg-vellum">
       <Navbar />
+<Helmet>
+        <title>{`${article.title} — StrangerMeet`}</title>
+        <meta name="description" content={article.description} />
+      </Helmet>
 
       <main className="mx-auto max-w-4xl px-4 py-24 sm:px-6 lg:px-8">
         <article className="rounded-3xl bg-surface-0 p-8 shadow-sm sm:p-10">

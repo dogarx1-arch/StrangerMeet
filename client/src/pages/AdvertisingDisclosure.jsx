@@ -1,10 +1,13 @@
 import Navbar from '../components/layout/Navbar'
-
+import { Helmet } from 'react-helmet-async'
 export default function AdvertisingDisclosure() {
   return (
     <div className="min-h-screen bg-vellum">
       <Navbar />
-
+<Helmet>
+  <title>Advertising Disclosure — StrangerMeet</title>
+  <meta name="description" content="Read StrangerMeet Advertising Disclosure to understand where ads may appear, how advertising supports the platform, and how third-party ads may use cookies." />
+</Helmet>
       <main className="mx-auto max-w-4xl px-4 py-24 sm:px-6 lg:px-8">
         <article className="rounded-3xl bg-surface-0 p-8 shadow-sm sm:p-10">
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-cobalt">Advertising</p>

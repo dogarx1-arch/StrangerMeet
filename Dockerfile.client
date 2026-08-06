@@ -1,5 +1,20 @@
 FROM node:20-alpine AS build
 WORKDIR /app
+
+# Install Alpine-native Chromium and necessary font/graphics dependencies
+RUN apk add --no-cache \
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
+
+# Tell Puppeteer to skip downloading glibc Chromium and point to Alpine Chromium
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
 COPY client/package*.json ./
 RUN npm ci
 COPY client/ .

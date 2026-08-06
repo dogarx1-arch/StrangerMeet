@@ -1,10 +1,19 @@
 import Navbar from '../components/layout/Navbar'
 import { Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 
 export default function About() {
   return (
     <div className="min-h-screen bg-vellum">
       <Navbar />
+
+      <Helmet>
+        <title>About Us — StrangerMeet</title>
+        <meta 
+          name="description" 
+          content="Learn about StrangerMeet, an adults-only anonymous text chat platform focused on simple, private, and respectful conversations." 
+        />
+      </Helmet>
 
       <main className="mx-auto max-w-4xl px-4 py-24 sm:px-6 lg:px-8">
         <article className="rounded-3xl bg-surface-0 p-8 shadow-sm sm:p-10">
@@ -39,10 +48,16 @@ export default function About() {
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link to="/safety" className="rounded-full bg-cobalt px-5 py-3 text-sm font-semibold text-white">
+            <Link 
+              to="/safety" 
+              className="rounded-full bg-cobalt px-5 py-3 text-sm font-semibold text-white"
+            >
               Read Safety Guidelines
             </Link>
-            <Link to="/contact" className="rounded-full border border-surface-2 px-5 py-3 text-sm font-semibold text-ink-secondary hover:border-cobalt hover:text-cobalt">
+            <Link 
+              to="/contact" 
+              className="rounded-full border border-surface-2 px-5 py-3 text-sm font-semibold text-ink-secondary hover:border-cobalt hover:text-cobalt"
+            >
               Contact Us
             </Link>
           </div>

@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import Landing from './pages/Landing'
 import Gateway from './pages/Gateway'
 import Lobby from './pages/Lobby'
@@ -17,6 +17,13 @@ import BlogArticle from './pages/BlogArticle'
 import Report from './pages/Report'
 import Footer from './components/layout/Footer'
 import ScrollToTop from './components/layout/ScrollToTop'
+import useSessionStore from './store/sessionStore'
+
+function RequireAgeGate({ children }) {
+  const ageConfirmed = useSessionStore((s) => s.ageConfirmed)
+  if (!ageConfirmed) return <Navigate to="/enter" replace />
+  return children
+}
 
 export default function App() {
   return (
@@ -24,11 +31,11 @@ export default function App() {
       <ScrollToTop />
 
       <Routes>
-        <Route path="/" element={<Landing />} />
+          <Route path="/" element={<Landing />} />
         <Route path="/enter" element={<Gateway />} />
-        <Route path="/lobby" element={<Lobby />} />
-        <Route path="/matching" element={<Searching />} />
-        <Route path="/chat/:sessionId" element={<Chat />} />
+        <Route path="/lobby" element={<RequireAgeGate><Lobby /></RequireAgeGate>} />
+        <Route path="/matching" element={<RequireAgeGate><Searching /></RequireAgeGate>} />
+        <Route path="/chat/:sessionId" element={<RequireAgeGate><Chat /></RequireAgeGate>} />
 
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
