@@ -209,6 +209,38 @@ export default function Landing() {
         </div>
       </section>
 
+      <section className="px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
+        <div className="mx-auto max-w-3xl">
+          <SectionTag>About StrangerMeet</SectionTag>
+          <h2 className="mt-4 font-serif text-3xl font-bold leading-tight text-ink sm:text-4xl">
+            What StrangerMeet actually is
+          </h2>
+          <div className="mt-6 space-y-4 font-sans text-base leading-7 text-ink-secondary">
+            <p>
+              StrangerMeet is a text-only, one-on-one chat platform for adults who want a quick,
+              low-pressure conversation without creating a profile. There is no dating matchmaking,
+              no media sharing, and no persistent identity - each session pairs you with one other
+              verified-adult user for a text exchange that ends when either person leaves.
+            </p>
+            <p>
+              Every message sent through StrangerMeet passes through automated content screening
+              before it reaches the other person. Messages flagged for harassment, threats, or
+              sexually explicit content are blocked in real time, and users can report or skip a
+              conversation at any point. We do not ask for or store your name, email, phone number,
+              or IP address.
+            </p>
+            <p>
+              StrangerMeet is built for people who want to practice a language, talk through an idea,
+              or just have a short conversation with someone new - without the overhead of social
+              media profiles or long-term chat history. Read our{' '}
+              <a href="/safety" className="text-cobalt underline">Safety Guidelines</a> and{' '}
+              <a href="/community-guidelines" className="text-cobalt underline">Community Guidelines</a>{' '}
+              before you start.
+            </p>
+          </div>
+        </div>
+      </section>
+
       <footer className="bg-surface-1 px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-left">
           <span className="font-serif text-sm font-bold text-ink">
