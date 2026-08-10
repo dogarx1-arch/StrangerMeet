@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Navbar from '../components/layout/Navbar'
-import CheckboxCobalt from '../components/ui/CheckboxCobalt'
 import BtnCobalt from '../components/ui/BtnCobalt'
 import SectionTag from '../components/ui/SectionTag'
 import useSessionStore from '../store/sessionStore'
@@ -14,6 +13,54 @@ export default function Gateway() {
   const [ageConfirmed, setAgeConfirmedLocal] = useState(false)
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [showTerms, setShowTerms] = useState(false)
+  const [dob, setDob] = useState('')
+  const [dobError, setDobError] = useState('')
+
+  const calculateAge = (birthDateStr) => {
+    const birthDate = new Date(birthDateStr)
+    if (Number.isNaN(birthDate.getTime())) return null
+    const today = new Date()
+    let age = today.getFullYear() - birthDate.getFullYear()
+    const monthDiff = today.getMonth() - birthDate.getMonth()
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--
+    }
+    return age
+  }
+
+  const handleDobChange = (e) => {
+    const value = e.target.value
+    setDob(value)
+
+    if (!value) {
+      setAgeConfirmedLocal(false)
+      setDobError('')
+      return
+    }
+
+    const age = calculateAge(value)
+
+    if (age === null) {
+      setAgeConfirmedLocal(false)
+      setDobError('Please enter a valid date.')
+      return
+    }
+
+    if (age < 18) {
+      setAgeConfirmedLocal(false)
+      setDobError('You must be 18 or older to use StrangerMeet.')
+      return
+    }
+
+    if (age > 120) {
+      setAgeConfirmedLocal(false)
+      setDobError('Please enter a valid date of birth.')
+      return
+    }
+
+    setDobError('')
+    setAgeConfirmedLocal(true)
+  }
 
   const canProceed = ageConfirmed && termsAccepted
 
@@ -102,13 +149,28 @@ export default function Gateway() {
                 </div>
 
                 <div className="space-y-5 mb-8">
-                  <CheckboxCobalt
-                    id="age-confirm"
-                    checked={ageConfirmed}
-                    onChange={(e) => setAgeConfirmedLocal(e.target.checked)}
-                    label="I confirm I am 18 years of age or older"
-                    sublabel="This is a legal requirement to use this service."
-                  />
+                  <div>
+                    <label
+                      htmlFor="dob-input"
+                      className="mb-2 block font-sans text-sm font-semibold text-ink"
+                    >
+                      Date of birth
+                    </label>
+                    <input
+                      id="dob-input"
+                      type="date"
+                      value={dob}
+                      onChange={handleDobChange}
+                      max={new Date().toISOString().split('T')[0]}
+                      className="w-full rounded-2xl border border-surface-2 bg-surface-1 px-4 py-3 font-sans text-sm text-ink outline-none transition focus:border-cobalt"
+                    />
+                    <p className="mt-1.5 text-xs text-ink-tertiary">
+                      You must be 18 or older to use this service. We do not store your date of birth.
+                    </p>
+                    {dobError && (
+                      <p className="mt-1.5 text-xs font-semibold text-danger">{dobError}</p>
+                    )}
+                  </div>
 
                   <label
                     htmlFor="terms-confirm"
