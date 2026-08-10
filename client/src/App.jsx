@@ -18,6 +18,7 @@ import Report from './pages/Report'
 import Footer from './components/layout/Footer'
 import ScrollToTop from './components/layout/ScrollToTop'
 import useSessionStore from './store/sessionStore'
+import Canonical from './components/Canonical'
 
 function RequireAgeGate({ children }) {
   const ageConfirmed = useSessionStore((s) => s.ageConfirmed)
@@ -28,7 +29,9 @@ function RequireAgeGate({ children }) {
 export default function App() {
   return (
     <div className="min-h-screen bg-vellum">
+<Canonical />
       <ScrollToTop />
+
 
       <Routes>
           <Route path="/" element={<Landing />} />
